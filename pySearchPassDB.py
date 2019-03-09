@@ -4,7 +4,7 @@ import re
 import sys
 import argparse
 
-coll = pymongo.MongoClient("localhost", 27017)["db"]["collection"]
+coll = pymongo.MongoClient("localhost", 27017)["pySearchPassDB"]["pySearchPassDB"]
 PATTERN_SPLIT = r':'
 
 #Add fields to db
@@ -13,7 +13,7 @@ def addToDB(dir):
 	countEmail = 0
 	for files in os.walk(dir):
 		for file in files[2]:
-			with open(files[0] + "/" + file) as f:
+			with open(files[0] + "/" + file, errors='ignore') as f:
 				for line in f:
 					arrLine = re.split(PATTERN_SPLIT, line, maxsplit=1)
 					arrLine[0] = arrLine[0].lower()
@@ -33,7 +33,7 @@ def clearDB():
 
 #Search email
 def searchEmail(email):
-	return coll.find_one({"_id": email})
+	return coll.find_one({"_id": email.lower()})
 
 #Search email and convenient output
 def printSearchEmail(email):
@@ -53,6 +53,7 @@ def printSearchEmail(email):
 def getCountEmails():
 	return coll.count()
 
+#Parse arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', '--search', help='Search email', metavar = 'EMAIL')
 parser.add_argument('-a', '--add', help='Add fields to db', metavar = 'PATH')

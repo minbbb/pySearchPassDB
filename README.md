@@ -1,5 +1,5 @@
 # pySearchPassDB
-Write data to the database and search for a password by email on this database.
+Write data to the database and search for a password by email on this database. **MongoDB** is used as a database. The script connects to the **localhost:27017** database and, if necessary, creates a database and a collection named *pySearchPassDB*.
 ## How to use
 Search for passwords by email.
 ```
