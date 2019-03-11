@@ -5,27 +5,23 @@ import sys
 import argparse
 
 coll = pymongo.MongoClient("localhost", 27017)["pySearchPassDB"]["pySearchPassDB"]
-PATTERN_SPLIT = r':'
+PATTERN_SPLIT = (':', ';')
 
 #Add fields to db
 def addToDB(dir):
-	countPass = 0
-	countEmail = 0
 	for files in os.walk(dir):
 		for file in files[2]:
 			with open(files[0] + "/" + file, errors='ignore') as f:
 				for line in f:
-					arrLine = re.split(PATTERN_SPLIT, line, maxsplit=1)
-					arrLine[0] = arrLine[0].lower()
-					if coll.find({"_id": arrLine[0]}).count() == 0:
-						coll.save({"_id": arrLine[0], "pass": [arrLine[1]]})
-						countEmail += 1
-						countPass += 1
+					for pattern in PATTERN_SPLIT:
+						arrLine = re.split(pattern, line.strip('\n'), maxsplit=1)
+						if len(arrLine) == 2:
+							break
 					else:
-						if not arrLine[1] in coll.find_one({"_id": arrLine[0]})["pass"]:
-							coll.update_one({"_id": arrLine[0]}, { '$push': { "pass": arrLine[1]} })
-							countPass += 1
-	print("Added " + str(countEmail) + " emails\nand " + str(countPass) + " passwords")
+						print("Error: string '" + str(arrLine[0].strip('\n')) + "' does not parse")
+						continue
+					arrLine[0] = arrLine[0].lower()
+					coll.update({"_id": arrLine[0]}, { '$addToSet': { "pass": arrLine[1]} }, upsert=True)
 
 #Clear all db fields
 def clearDB():

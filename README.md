@@ -20,3 +20,5 @@ Clear all db fields.
 ```
 python pySearchPassDB.py --clear
 ```
+## Delimiters
+There can be different separators in the lists. These delimiters can be changed in the script itself in the tuple *PATTERN_SPLIT*. The default is 2 delimiters (":" and ";").
